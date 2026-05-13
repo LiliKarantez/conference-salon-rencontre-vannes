@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sondage Conférences & Ateliers — Les Cœurs Solitaires</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+  :root {
+    --prune: #2d1a40;
+    --prune-light: #3d2557;
+    --mauve: #ede0f5;
+    --mauve-mid: #d4b8e8;
+    --gold: #c9a84c;
+    --gold-light: #f0d98a;
+    --text: #1a0d2e;
+    --text-muted: #6b5080;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--mauve);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 2rem 1rem 4rem;
+  }
+
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  header {
+    text-align: center;
+    margin-bottom: 2.5rem;
+  }
+
+  .logo-line {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.18em;
+    color: var(--prune);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.6rem, 5vw, 2.2rem);
+    font-weight: 400;
+    color: var(--prune);
+    line-height: 1.25;
+    margin-bottom: 0.75rem;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .divider {
+    width: 48px;
+    height: 2px;
+    background: var(--gold);
+    margin: 1.25rem auto;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+  }
+
+  .card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 0.75rem;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 20px rgba(45,26,64,0.1);
+    transform: translateY(-1px);
+  }
+
+  .card.selected {
+    border-color: var(--prune);
+    background: #f7f0fd;
+  }
+
+  .card.selected .check-circle {
+    background: var(--prune);
+    border-color: var(--prune);
+  }
+
+  .card.selected .check-circle::after {
+    opacity: 1;
+  }
+
+  .check-circle {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    border-radius: 50%;
+    border: 2px solid var(--mauve-mid);
+    background: white;
+    margin-top: 2px;
+    position: relative;
+    transition: all 0.2s;
+  }
+
+  .check-circle::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: white;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .card-content {
+    flex: 1;
+  }
+
+  .card-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--prune);
+    line-height: 1.4;
+    margin-bottom: 3px;
+  }
+
+  .card-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 400;
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  .tag-conf {
+    background: #ede0f5;
+    color: #5a3480;
+  }
+
+  .tag-atelier {
+    background: #fef3d4;
+    color: #8a6200;
+  }
+
+  .counter {
+    text-align: center;
+    margin: 2rem 0 1.5rem;
+    font-size: 14px;
+    color: var(--text-muted);
+  }
+
+  .counter strong {
+    color: var(--prune);
+    font-weight: 500;
+  }
+
+  .form-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .form-section h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 400;
+    color: var(--prune);
+    margin-bottom: 1rem;
+  }
+
+  .field {
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  input[type="number"] {
+    width: 120px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--mauve-mid);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="number"]:focus {
+    border-color: var(--prune);
+  }
+
+  input[type="text"],
+  input[type="email"],
+  textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1.5px solid var(--mauve-mid);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--text);
+    background: white;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  input[type="text"]:focus,
+  input[type="email"]:focus,
+  textarea:focus {
+    border-color: var(--prune);
+  }
+
+  textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+
+  .rgpd {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 1rem;
+    font-style: italic;
+  }
+
+  .btn-resa {
+    display: block;
+    width: 100%;
+    padding: 16px;
+    background: var(--gold);
+    color: var(--prune);
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 2rem;
+    text-align: center;
+    text-decoration: none;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.15s;
+  }
+
+  .btn-resa:hover {
+    background: var(--gold-light);
+    transform: translateY(-1px);
+  }
+
+  .resa-block {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    text-align: center;
+    border: 2px solid var(--gold);
+  }
+
+  .resa-block p {
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .resa-block .resa-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    color: var(--prune);
+    margin-bottom: 0.25rem;
+  }
+    display: block;
+    width: 100%;
+    padding: 14px;
+    background: var(--prune);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+    margin-top: 1.25rem;
+    transition: background 0.2s, transform 0.15s;
+    letter-spacing: 0.03em;
+  }
+
+  .btn-submit:hover {
+    background: var(--prune-light);
+    transform: translateY(-1px);
+  }
+
+  .btn-submit:disabled {
+    background: var(--mauve-mid);
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .success-msg {
+    display: none;
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    background: white;
+    border-radius: 16px;
+    margin-top: 1.5rem;
+  }
+
+  .success-msg .icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .success-msg h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.3rem;
+    color: var(--prune);
+    margin-bottom: 0.5rem;
+  }
+
+  .success-msg p {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.6;
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <p class="logo-line">Les Cœurs Solitaires</p>
+    <div class="divider"></div>
+    <h1>Quel programme vous inspire ?</h1>
+    <p class="subtitle">Salon de la Rencontre Célibataire de Bretagne — 6 juin 2026, Vannes. Dites-nous ce que vous souhaitez vivre.</p>
+    <div class="divider"></div>
+  </header>
+
+  <p class="section-label">Conférences</p>
+
+  <div class="card" onclick="toggleCard(this, 'Être et se sentir magnétique — Arthur L.')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Être et se sentir magnétique <span class="tag tag-conf">Conférence</span></div>
+      <div class="card-meta">par Arthur L.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggleCard(this, 'Guérir et sortir de ses schémas répétitifs en amour — Arthur L.')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Guérir et sortir de ses schémas répétitifs en amour <span class="tag tag-conf">Conférence</span></div>
+      <div class="card-meta">par Arthur L.</div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggleCard(this, 'Les 5 sens et leur pouvoir érogène')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Les 5 sens et leur pouvoir érogène <span class="tag tag-conf">Conférence</span></div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggleCard(this, 'Les hommes viennent de Mars et les femmes de Vénus')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Les hommes viennent de Mars, les femmes de Vénus <span class="tag tag-conf">Conférence</span></div>
+    </div>
+  </div>
+
+  <p class="section-label">Ateliers</p>
+
+  <div class="card" onclick="toggleCard(this, 'Atelier hypnose — Estime de soi')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Estime de soi <span class="tag tag-atelier">Atelier hypnose</span></div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggleCard(this, 'Atelier hypnose — Retrouver la joie, la paix, la lumière intérieure')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Retrouver la joie, la paix, la lumière intérieure <span class="tag tag-atelier">Atelier hypnose</span></div>
+    </div>
+  </div>
+
+  <div class="card" onclick="toggleCard(this, 'Atelier hypnose — Mon corps retrouve ses sensations')">
+    <div class="check-circle"></div>
+    <div class="card-content">
+      <div class="card-title">Mon corps retrouve ses sensations <span class="tag tag-atelier">Atelier hypnose</span></div>
+    </div>
+  </div>
+
+  <div class="counter">
+    <strong id="count">0</strong> sélection<span id="plural"></span>
+  </div>
+
+  <div class="form-section">
+    <h2>Quelques mots sur vous</h2>
+
+    <div class="field">
+      <label for="prenom">Prénom</label>
+      <input type="text" id="prenom" placeholder="Votre prénom" required>
+    </div>
+
+    <div class="field">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="votre@email.fr" required>
+    </div>
+
+    <div class="field">
+      <label for="age">Âge</label>
+      <input type="number" id="age" placeholder="ex. 42" min="18" max="99">
+    </div>
+
+    <button class="btn-submit" id="btn" onclick="submitForm()">Envoyer mes préférences</button>
+
+    <p class="rgpd">Vos données nous sont confiées. Elles ne seront jamais vendues, jamais partagées.</p>
+  </div>
+
+  <div class="success-msg" id="success">
+    <div class="icon">✨</div>
+    <h2>Merci pour votre retour</h2>
+    <p>Vos préférences ont bien été transmises. Elles nous aideront à construire un programme qui vous ressemble.</p>
+  </div>
+
+  <div class="resa-block">
+    <div class="resa-title">Salon de la Rencontre Célibataire de Bretagne</div>
+    <p>6 juin 2026 — Maison Flow, Vannes. Places limitées à 120 participants.</p>
+    <a href="https://ypl.me/PUR" target="_blank" class="btn-resa">Réserver ma place →</a>
+  </div>
+
+  <footer>
+    © 2026 Lili Karantez — Toute reproduction interdite, même partielle<br>
+    Les Cœurs Solitaires — SIRET 40149331700069<br>
+    contact@lescoeurssolitaires.fr
+  </footer>
+
+</div>
+
+<script>
+  const selected = new Set();
+
+  function toggleCard(el, value) {
+    if (selected.has(value)) {
+      selected.delete(value);
+      el.classList.remove('selected');
+    } else {
+      selected.add(value);
+      el.classList.add('selected');
+    }
+    const n = selected.size;
+    document.getElementById('count').textContent = n;
+    document.getElementById('plural').textContent = n > 1 ? 's' : '';
+  }
+
+  async function submitForm() {
+    const prenom = document.getElementById('prenom').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const age = document.getElementById('age').value.trim();
+
+    if (!prenom || !email) {
+      alert('Merci de renseigner votre prénom et votre email.');
+      return;
+    }
+
+    if (selected.size === 0) {
+      alert('Merci de sélectionner au moins une conférence ou un atelier.');
+      return;
+    }
+
+    const btn = document.getElementById('btn');
+    btn.disabled = true;
+    btn.textContent = 'Envoi en cours…';
+
+    const choix = Array.from(selected).join(' | ');
+
+    const formData = new FormData();
+    formData.append('access_key', 'd42b8d9d-a52c-4888-a489-5dd59b1b0f5b');
+    formData.append('subject', 'Sondage programme Salon Vannes — ' + prenom);
+    formData.append('Prénom', prenom);
+    formData.append('Email', email);
+    if (age) formData.append('Âge', age);
+    formData.append('Sélections', choix);
+
+    try {
+      const res = await fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (data.success) {
+        document.querySelector('.form-section').style.display = 'none';
+        document.getElementById('success').style.display = 'block';
+      } else {
+        btn.disabled = false;
+        btn.textContent = 'Envoyer mes préférences';
+        alert('Une erreur est survenue. Merci de réessayer.');
+      }
+    } catch {
+      btn.disabled = false;
+      btn.textContent = 'Envoyer mes préférences';
+      alert('Connexion impossible. Merci de vérifier votre réseau.');
+    }
+  }
+</script>
+
+</body>
+</html>
